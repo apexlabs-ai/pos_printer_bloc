@@ -77,10 +77,14 @@ class PrinterScanBloc extends Bloc <PrinterScanEvent, PrinterScanState> {
         _printerManager.startScan(kSearchTimeOut);
       }
       if(event.types.contains(StarPrinter)) {
-        StarPrnt.portDiscovery(StarPortType.All).then(
+        StarPrnt.portDiscovery(StarPortType.Bluetooth).then(
                 (ports) =>
                 ports.forEach((port) =>
-                    add(PrinterScanFound(StarPrinter(port)))));
+                    add(PrinterScanFound(StarPrinter(port))))
+        );
+        if(!event.types.contains(BluetoothPrinter)) {
+          add(PrinterScanFound());
+        }
       }
     } else if(event is PrinterScanStop) {
       if(state.scanning) _printerManager.stopScan();
