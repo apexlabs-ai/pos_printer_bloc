@@ -252,8 +252,9 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
           "appendBitmapText": "--------------------------------------"
         });
       } else if(line is PosTicketFeed) {
+        // Also for some reason android linefeeds are not sufficient?
         commands.push({
-          "appendLineFeed": line.lines
+          "appendLineFeed": line.lines * (Platform.isAndroid ? 2 : 1)
         });
       } else {
         print("_commandsFromLines: unsupported line type ${line.runtimeType}");
