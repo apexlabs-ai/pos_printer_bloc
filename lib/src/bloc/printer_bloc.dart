@@ -138,12 +138,10 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
       yield state.toBusy();
       if(printer == null) {
         printer = await _connectPrinter();
-        if(printer != null) yield PrinterState(printer: printer);
+        if(printer != null) yield PrinterState(printer: printer, busy: true);
       }
-      yield state.toFree();
 
       if(state.printer is BluetoothPrinter) {
-        yield state.toBusy();
         final result = await _printerManager.printTicket(_ticketFromLines(
             PaperSize.mm58, _capabilityProfile,
             lines: event.lines));
@@ -157,7 +155,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
         yield state.toBusy();
         final result = await StarPrnt.print(
             portName: state.printer.address,
-            emulation: 'StarGraphic',
+            emulation: kStarEmulation,
             printCommands: _commandsFromLines(lines: event.lines)
         );
         if(result != 'Success') {
