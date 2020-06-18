@@ -1,7 +1,6 @@
 name: pos_printer_bloc
 description: A Flutter BLoC component to uniformly handle printing of POS receipts.
 version: 0.0.1
-author: Alex Yushin <ayushin@apexlabs.ai>
 homepage: https://aahi.io
 
 environment:
@@ -14,16 +13,21 @@ dependencies:
   flutter_bloc: ^4.0.0
   equatable: ^1.2.0
   shared_preferences: ^0.5.7
-  esc_pos_bluetooth:
-    path: ../esc_pos_bluetooth
-
   esc_pos_utils: ^0.4.1
+  esc_pos_bluetooth: ^0.2.8
+  #  esc_pos_bluetooth:
+  #    path: ../esc_pos_bluetooth
+  flutter_star_prnt: ^1.0.1
+  #  flutter_star_prnt:
+  #    path: ../flutter_star_prnt
+  flutter_bluetooth_basic: ^0.1.5
+  image: ^2.1.13
 
-  flutter_star_prnt:
-    path: ../flutter_star_prnt
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
 flutter:
