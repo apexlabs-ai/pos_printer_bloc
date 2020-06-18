@@ -61,7 +61,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
 
   static const kPrinterSharedPrefsKey = "aahi.sell.printer";
   final String printerSharedPrefsKey;
-  static const kStarEmulation = 'StarLine';
+  static const kStarEmulation = "none";
 
   static final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   
@@ -75,7 +75,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   PrinterBloc({this.printerSharedPrefsKey = kPrinterSharedPrefsKey});
 
   Future <Printer> _getStarPrinter([String portName]) async {
-    for(var port in await StarPrnt.portDiscovery(StarPortType.All)) {
+    for(var port in await StarPrnt.portDiscovery(StarPortType.Bluetooth)) {
       if(portName == null || port.portName == portName) return StarPrinter(port);
     }
     return null;
@@ -229,20 +229,30 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     //    commands.appendEncoding(StarEncoding.UTF8);
     for(var line in lines) {
       if(line is PosTicketText) {
-        commands.appendBitmapText(
-            text: line.text,
-            alignment:  _starAlignment[line.styles.align],
-//            fontSize: line.styles.height.value,
-//            width: line.styles.width.value
-        );
-      } else if(line is PosTicketCut) {
-        commands.appendCutPaper(_starCutAction[line.mode]);
-      } else if(line is PosTicketHr) {
-        commands.appendBitmapText(text: '--------------------------------------');
-      } else if(line is PosTicketFeed) {
-        for (int i = 1; i < line.lines; i++) {
-          commands.appendBitmapText(text: "\n\n");
+        if(line.styles.reverse) {
+          commands.push({"appendInvert": line.text});
+        } else if(line.styles.underline) {
+            commands.push({"appendUnderline": line.text});
+        } else {
+          commands.push({
+            "appendBitmapText": line.text,
+// Alignment does not work for some reason
+//          "alignment": _starAlignment[line.styles.align].text,
+            "fontSize": line.styles.height.value * 12,
+          });
         }
+      } else if(line is PosTicketCut) {
+        commands.push({
+          "appendCutPaper": _starCutAction[line.mode].text
+        });
+      } else if(line is PosTicketHr) {
+        commands.push({
+          "appendBitmapText": "--------------------------------------"
+        });
+      } else if(line is PosTicketFeed) {
+        commands.push({
+          "appendLineFeed": line.lines
+        });
       } else {
         print("_commandsFromLines: unsupported line type ${line.runtimeType}");
       }

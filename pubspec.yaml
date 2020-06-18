@@ -1,6 +1,6 @@
 name: pos_printer_bloc
 description: A Flutter BLoC component to uniformly handle printing of POS receipts.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/apexlabs-ai/pos_printer_bloc
 
 environment:
