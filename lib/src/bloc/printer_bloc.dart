@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
@@ -238,7 +239,8 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
             "appendBitmapText": line.text,
 // Alignment does not work for some reason
 //          "alignment": _starAlignment[line.styles.align].text,
-            "fontSize": line.styles.height.value * 12,
+            // For some reason android fonts are twice as small?
+            "fontSize": line.styles.height.value * (Platform.isAndroid ? 25 : 12),
           });
         }
       } else if(line is PosTicketCut) {
