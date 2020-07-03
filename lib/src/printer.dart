@@ -30,3 +30,14 @@ class StarPrinter implements Printer {
 
   StarPrinter(this.portInfo);
 }
+
+class NetworkPrinter implements Printer {
+  final String name;
+  final String address;
+  final int type;
+
+  NetworkPrinter({this.name, this.type = 9100, this.address});
+
+  @override
+  String toString() => "$runtimeType: $name [$address:$type]";
+}
