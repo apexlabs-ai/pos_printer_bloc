@@ -169,8 +169,8 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
             PaperSize.mm58, _capabilityProfile,
             lines: event.lines));
         if (result != pos_blue.PosPrintResult.success) {
-          yield PrinterState();
-          add(PrinterConnect());
+//          yield PrinterState();
+//          add(PrinterConnect());
           onError(result.msg, null);
           return;
         }
