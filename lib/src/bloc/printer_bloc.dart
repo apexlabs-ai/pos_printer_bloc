@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -8,11 +9,10 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:flutter_star_prnt/flutter_star_prnt.dart';
+import 'package:pos_printer_bloc/pos_printer_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pos_ticket_line.dart';
-import '../printer.dart';
-
 
 class PrinterState extends Equatable  {
   final bool busy;
@@ -61,6 +61,7 @@ class PrintTest extends PrinterEvent {}
 
 class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   static const kSearchTimeOut = Duration(seconds: 5);
+  static const Latin1Codec latin1flex = Latin1Codec(allowInvalid: true);
 
   static const kPrinterSharedPrefsKey = "aahi.sell.printer";
   final String printerSharedPrefsKey;
@@ -200,7 +201,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   }
 
   Ticket _ticketFromLines(PaperSize paperSize, CapabilityProfile profile, {List <PosTicketLine> lines}) {
-    final ticket = Ticket(paperSize, profile);
+    final ticket = Ticket(paperSize, profile, codec: latin1flex);
     for(var line in lines) {
       if(line is PosTicketText) {
         ticket.text(line.text, styles: line.styles, linesAfter: line.linesAfter);

@@ -14,13 +14,18 @@ dependencies:
   equatable: ^1.2.0
   shared_preferences: ^0.5.7
   validators: ^2.0.1
-  esc_pos_utils: ^0.4.5
+#  esc_pos_utils: ^0.4.5
 #  esc_pos_bluetooth: ^0.2.8
   esc_pos_bluetooth:
     path: ../esc_pos_bluetooth
   esc_pos_printer: ^3.2.5
   flutter_star_prnt: ^1.0.4
   image: any
+
+dependency_overrides:
+  esc_pos_utils:
+    path: ../esc_pos_utils
+
 
 dev_dependencies:
   flutter_test:
