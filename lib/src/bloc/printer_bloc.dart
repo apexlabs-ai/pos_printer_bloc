@@ -6,6 +6,7 @@ import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart' as pos_blue;
 import 'package:esc_pos_printer/esc_pos_printer.dart' as pos_print;
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:flutter_star_prnt/flutter_star_prnt.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -105,7 +106,10 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
           printer = NetworkPrinter(address: printerAddressName[0].substring(1),
               name: printerAddressName[0].substring(1));
         } else {
-          printer = BluetoothPrinter(printerAddressName);
+          printer = BluetoothPrinter(BluetoothDevice()
+            ..address=printerAddressName[0]
+            ..name=printerAddressName[1]
+          );
         }
       } else {
         // Try any star printer by default - this makes the app freeze up for a moment so don't do it
