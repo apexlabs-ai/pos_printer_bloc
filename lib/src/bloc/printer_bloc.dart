@@ -61,7 +61,9 @@ class PrintTest extends PrinterEvent {}
 
 class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   static const kSearchTimeOut = Duration(seconds: 5);
-  static const Latin1Codec latin1flex = Latin1Codec(allowInvalid: true);
+//  static const Utf8Codec latin1flex = Utf8Codec();
+//  static const Latin1Codec latin1flex = Latin1Codec();
+  static const Latin1Codec latin1flex = Latin1Codec();
 
   static const kPrinterSharedPrefsKey = "aahi.sell.printer";
   final String printerSharedPrefsKey;
@@ -154,7 +156,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     } else if (event is PrintTicket) {
       var printer = state.printer;
       yield state.toBusy();
-      if(printer == null) {
+      if(printer == null || printer is BluetoothPrinter) {
         printer = await _connectPrinter();
         if(printer != null) yield PrinterState(printer: printer, busy: true);
       }
@@ -170,6 +172,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
           return;
         }
       } else if(state.printer is BluetoothPrinter) {
+
         final result = await _printerManager.printTicket(_ticketFromLines(
             PaperSize.mm58, _capabilityProfile,
             lines: event.lines));
@@ -200,11 +203,19 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     }
   }
 
+
+  String _removeDiacritic(String input) {
+    String result = '';
+    input.split('').forEach((c) => result += _diacriticMap[c] ?? c);
+    return result;
+  }
+
+
   Ticket _ticketFromLines(PaperSize paperSize, CapabilityProfile profile, {List <PosTicketLine> lines}) {
     final ticket = Ticket(paperSize, profile, codec: latin1flex);
     for(var line in lines) {
       if(line is PosTicketText) {
-        ticket.text(line.text, styles: line.styles, linesAfter: line.linesAfter);
+        ticket.text(_removeDiacritic(line.text), styles: line.styles, linesAfter: line.linesAfter);
       } else if(line is PosTicketRow) {
         ticket.row(line.cols);
       } else if(line is PosTicketBeep) {
@@ -291,4 +302,37 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     print(commands.getCommands());
     return commands;
   }
+
+  static const Map<String, String> _diacriticMap = {
+    "á": "a",
+    "č": "c",
+    "ď": "d",
+    "é": "e",
+    "ě": "e",
+    "í": "i",
+    "ň": "n",
+    "ó": "o",
+    "ř": "r",
+    "š": "s",
+    "ť": "t",
+    "ú": "u",
+    "ů": "u",
+    "ý": "y",
+    "ž": "z",
+    "Á": "A",
+    "Č": "C",
+    "Ď": "D",
+    "É": "E",
+    "Ě": "E",
+    "Í": "I",
+    "Ň": "N",
+    "Ó": "O",
+    "Ř": "R",
+    "Š": "S",
+    "Ť": "T",
+    "Ú": "U",
+    "Ů": "U",
+    "Ý": "Y",
+    "Ž": "Z"
+  };
 }
