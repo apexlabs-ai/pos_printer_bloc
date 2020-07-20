@@ -63,7 +63,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   static const kSearchTimeOut = Duration(seconds: 5);
 //  static const Utf8Codec latin1flex = Utf8Codec();
 //  static const Latin1Codec latin1flex = Latin1Codec();
-  static const Latin1Codec latin1flex = Latin1Codec();
+//  static const Latin1Codec latin1flex = Latin1Codec();
 
   static const kPrinterSharedPrefsKey = "aahi.sell.printer";
   final String printerSharedPrefsKey;
@@ -212,7 +212,7 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
 
 
   Ticket _ticketFromLines(PaperSize paperSize, CapabilityProfile profile, {List <PosTicketLine> lines}) {
-    final ticket = Ticket(paperSize, profile, codec: latin1flex);
+    final ticket = Ticket(paperSize, profile/*, codec: latin1flex*/);
     for(var line in lines) {
       if(line is PosTicketText) {
         ticket.text(_removeDiacritic(line.text), styles: line.styles, linesAfter: line.linesAfter);
