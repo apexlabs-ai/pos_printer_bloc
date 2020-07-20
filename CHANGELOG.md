@@ -1,3 +1,10 @@
+## [0.1.0] - 20 Jult 2020
+
+Added basic support for network printer and upgraded dependencies
+
+TODO:
+- print on network printer via websockets on flutter web
+
 ## [0.0.2] - 18 June 2020
 
 * Added basic Printer Scanner Builder
