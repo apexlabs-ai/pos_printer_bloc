@@ -1,16 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
+import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart' as pos_blue;
+import 'package:esc_pos_printer/esc_pos_printer.dart' as pos_print;
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:flutter_star_prnt/flutter_star_prnt.dart';
+import 'package:pos_printer_bloc/pos_printer_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pos_ticket_line.dart';
-import '../printer.dart';
-
 
 class PrinterState extends Equatable  {
   final bool busy;
@@ -59,14 +61,18 @@ class PrintTest extends PrinterEvent {}
 
 class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   static const kSearchTimeOut = Duration(seconds: 5);
+//  static const Utf8Codec latin1flex = Utf8Codec();
+//  static const Latin1Codec latin1flex = Latin1Codec();
+  static const Latin1Codec latin1flex = Latin1Codec();
 
   static const kPrinterSharedPrefsKey = "aahi.sell.printer";
   final String printerSharedPrefsKey;
   static const kStarEmulation = "none";
 
-  static final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
-  
-  PrinterBluetoothManager get printerManager => _printerManager;
+  static final pos_blue.PrinterBluetoothManager _printerManager = pos_blue.PrinterBluetoothManager();
+  static final pos_print.PrinterNetworkManager _networkManager = pos_print.PrinterNetworkManager();
+
+  pos_blue.PrinterBluetoothManager get printerManager => _printerManager;
 
   CapabilityProfile _capabilityProfile;
   
@@ -99,6 +105,14 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
           if(printer == null) {
             prefs.remove(printerSharedPrefsKey);
           }
+        } else if(printerAddressName[0][0] == '@') {
+          printer = NetworkPrinter(address: printerAddressName[0].substring(1),
+              name: printerAddressName[0].substring(1));
+        } else {
+          printer = BluetoothPrinter(BluetoothDevice()
+            ..address=printerAddressName[0]
+            ..name=printerAddressName[1]
+          );
         }
       } else {
         // Try any star printer by default - this makes the app freeze up for a moment so don't do it
@@ -124,6 +138,11 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
       }
       prefs.setStringList(printerSharedPrefsKey, ['*' + printer?.address, printer?.name]);
       return printer;
+    } else if(printer is NetworkPrinter) {
+      _networkManager.selectPrinter(printer.address, port: printer.type);
+      prefs.setStringList(printerSharedPrefsKey, ['@' + printer?.address, printer?.name]);
+      _capabilityProfile = await CapabilityProfile.load();
+      return printer;
     }
 
     return null;
@@ -137,18 +156,29 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     } else if (event is PrintTicket) {
       var printer = state.printer;
       yield state.toBusy();
-      if(printer == null) {
+      if(printer == null || printer is BluetoothPrinter) {
         printer = await _connectPrinter();
         if(printer != null) yield PrinterState(printer: printer, busy: true);
       }
 
-      if(state.printer is BluetoothPrinter) {
+      if(state.printer is NetworkPrinter) {
+        _networkManager.selectPrinter(state.printer.address, port: state.printer.type);
+        final result = await _networkManager.printTicket(_ticketFromLines(
+            PaperSize.mm58, _capabilityProfile,
+            lines: event.lines));
+        if (result != pos_print.PosPrintResult.success) {
+          yield PrinterState();
+          onError(result.msg, null);
+          return;
+        }
+      } else if(state.printer is BluetoothPrinter) {
+
         final result = await _printerManager.printTicket(_ticketFromLines(
             PaperSize.mm58, _capabilityProfile,
             lines: event.lines));
-        if (result != PosPrintResult.success) {
-          yield PrinterState();
-          add(PrinterConnect());
+        if (result != pos_blue.PosPrintResult.success) {
+//          yield PrinterState();
+//          add(PrinterConnect());
           onError(result.msg, null);
           return;
         }
@@ -173,11 +203,19 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     }
   }
 
+
+  String _removeDiacritic(String input) {
+    String result = '';
+    input.split('').forEach((c) => result += _diacriticMap[c] ?? c);
+    return result;
+  }
+
+
   Ticket _ticketFromLines(PaperSize paperSize, CapabilityProfile profile, {List <PosTicketLine> lines}) {
-    final ticket = Ticket(paperSize, profile);
+    final ticket = Ticket(paperSize, profile, codec: latin1flex);
     for(var line in lines) {
       if(line is PosTicketText) {
-        ticket.text(line.text, styles: line.styles, linesAfter: line.linesAfter);
+        ticket.text(_removeDiacritic(line.text), styles: line.styles, linesAfter: line.linesAfter);
       } else if(line is PosTicketRow) {
         ticket.row(line.cols);
       } else if(line is PosTicketBeep) {
@@ -264,4 +302,37 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
     print(commands.getCommands());
     return commands;
   }
+
+  static const Map<String, String> _diacriticMap = {
+    "á": "a",
+    "č": "c",
+    "ď": "d",
+    "é": "e",
+    "ě": "e",
+    "í": "i",
+    "ň": "n",
+    "ó": "o",
+    "ř": "r",
+    "š": "s",
+    "ť": "t",
+    "ú": "u",
+    "ů": "u",
+    "ý": "y",
+    "ž": "z",
+    "Á": "A",
+    "Č": "C",
+    "Ď": "D",
+    "É": "E",
+    "Ě": "E",
+    "Í": "I",
+    "Ň": "N",
+    "Ó": "O",
+    "Ř": "R",
+    "Š": "S",
+    "Ť": "T",
+    "Ú": "U",
+    "Ů": "U",
+    "Ý": "Y",
+    "Ž": "Z"
+  };
 }

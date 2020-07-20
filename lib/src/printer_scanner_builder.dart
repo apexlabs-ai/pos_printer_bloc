@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_printer_bloc/pos_printer_bloc.dart';
+import 'package:validators/validators.dart';
 
 class PrinterScannerBuilder extends StatefulWidget {
   final List printerTypes;
@@ -63,8 +64,22 @@ class PrinterScannerBuilderState extends State<PrinterScannerBuilder> {
                                     : SizedBox();
                               }));
                     }),
-              ]);
-            }));
+              ] + (widget.printerTypes.contains(NetworkPrinter) ? [ListTile(
+                title: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'IP Address',
+                  ),
+                  onFieldSubmitted: (text) {
+                    _printerScanBloc.add(PrinterScanFound(NetworkPrinter(
+                      address: text,
+                      name: text
+                    )));
+                  },
+                  validator: (text) => isIP(text, 4) ? null : 'Please enter a valid ip address',
+                ),
+              )] : []));
+            })
+    );
   }
 
   @override
