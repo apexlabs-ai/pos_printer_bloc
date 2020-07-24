@@ -1,4 +1,7 @@
-## [0.1.0] - 20 Jult 2020
+## [0.1.3] - 20 July 2020
+- upgrade to bloc 5.0.1
+
+## [0.1.0] - 20 July 2020
 
 Added basic support for network printer and upgraded dependencies
 

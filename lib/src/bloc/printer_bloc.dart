@@ -75,11 +75,8 @@ class PrinterBloc extends Bloc <PrinterEvent, PrinterState> {
   pos_blue.PrinterBluetoothManager get printerManager => _printerManager;
 
   CapabilityProfile _capabilityProfile;
-  
-  @override
-  PrinterState get initialState => PrinterState();
 
-  PrinterBloc({this.printerSharedPrefsKey = kPrinterSharedPrefsKey});
+  PrinterBloc({this.printerSharedPrefsKey = kPrinterSharedPrefsKey}) : super(PrinterState());
 
   Future <Printer> _getStarPrinter([String portName]) async {
     for(var port in await StarPrnt.portDiscovery(StarPortType.Bluetooth)) {

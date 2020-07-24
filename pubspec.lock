@@ -42,7 +42,7 @@ packages:
       name: bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.0"
+    version: "5.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -106,6 +106,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  cubit:
+    dependency: transitive
+    description:
+      name: cubit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   equatable:
     dependency: "direct main"
     description:
@@ -116,9 +123,9 @@ packages:
   esc_pos_bluetooth:
     dependency: "direct main"
     description:
-      path: "../esc_pos_bluetooth"
-      relative: true
-    source: path
+      name: esc_pos_bluetooth
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.2.8"
   esc_pos_printer:
     dependency: "direct main"
@@ -128,11 +135,11 @@ packages:
     source: hosted
     version: "3.2.5"
   esc_pos_utils:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
-      path: "../esc_pos_utils"
-      relative: true
-    source: path
+      name: esc_pos_utils
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.4.5"
   fake_async:
     dependency: transitive
@@ -159,14 +166,21 @@ packages:
       name: flutter_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.1"
+    version: "5.0.1"
   flutter_bluetooth_basic:
+    dependency: "direct main"
+    description:
+      name: flutter_bluetooth_basic
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
+  flutter_cubit:
     dependency: transitive
     description:
-      path: "../flutter_bluetooth_basic"
-      relative: true
-    source: path
-    version: "0.1.5"
+      name: flutter_cubit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   flutter_star_prnt:
     dependency: "direct main"
     description:
@@ -220,7 +234,7 @@ packages:
     source: hosted
     version: "3.1.4"
   image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image
       url: "https://pub.dartlang.org"
@@ -253,7 +267,7 @@ packages:
       name: matcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.8"
+    version: "0.12.9"
   meta:
     dependency: transitive
     description:
@@ -351,7 +365,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.24.1"
+    version: "0.23.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -433,7 +447,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.17"
+    version: "0.2.18"
   typed_data:
     dependency: transitive
     description:

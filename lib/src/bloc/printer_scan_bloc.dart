@@ -49,7 +49,7 @@ class PrinterScanBloc extends Bloc <PrinterScanEvent, PrinterScanState> {
 
   final PrinterBluetoothManager _printerManager;
 
-  PrinterScanBloc(this._printerManager) {
+  PrinterScanBloc(this._printerManager)  : super(PrinterScanState()) {
     _scanSubscription = _printerManager.scanResults.listen((List <PrinterBluetooth>devices) {
       for (PrinterBluetooth device in devices) {
         add(PrinterScanFound(BluetoothPrinter(BluetoothDevice()
@@ -64,9 +64,6 @@ class PrinterScanBloc extends Bloc <PrinterScanEvent, PrinterScanState> {
       }
     });
   }
-
-  @override
-  PrinterScanState get initialState => PrinterScanState();
 
   @override
   Stream<PrinterScanState> mapEventToState(PrinterScanEvent event) async* {
