@@ -33,7 +33,7 @@ class PrinterScannerBuilderState extends State<PrinterScannerBuilder> {
         onRefresh: () async =>
             _printerScanBloc.add(PrinterScanStart(types: widget.printerTypes)),
         child: BlocBuilder<PrinterScanBloc, PrinterScanState>(
-            bloc: _printerScanBloc,
+            cubit: _printerScanBloc,
             builder: (context, state) {
               return Column(children: [
                 state.scanning ? LinearProgressIndicator() : SizedBox(),
@@ -54,7 +54,7 @@ class PrinterScannerBuilderState extends State<PrinterScannerBuilder> {
                           },
                           subtitle: Text(printer.address),
                           trailing: BlocBuilder<PrinterBloc, PrinterState>(
-                              bloc: _printerBloc,
+                              cubit: _printerBloc,
                               builder: (context, state) {
                                 return printer.address == state.printer?.address
                                     ? IconButton(

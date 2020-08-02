@@ -12,5 +12,6 @@ A Flutter BLoC component to uniformly handle printing of POS receipts.
 
 [X] - Generic bluetooth printers via [esc_pos_bluetooth](https://pub.dev/packages/esc_pos_bluetooth)
 [X] - Micro Star Printers via [flutter_star_prnt](https://pub.dev/packages/flutter_star_prnt)
+[X] - Generic network POS printers via [esc_pos_printer](https://pub.dev/packages/esc_pos_printer)
 [ ] - Generic network POS printers via [network_pos_printer](network_pos_printer)
 [ ] - Brother label printers via [brotherlabelprintdart](https://pub.dev/packages/brotherlabelprintdart)
